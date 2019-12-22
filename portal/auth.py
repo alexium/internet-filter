@@ -1,10 +1,11 @@
+"""Auth-related endpoints for the portal service."""
+# pylint: disable=no-member
 import time
 
 from datetime import datetime
 from flask import Blueprint
 from flask import flash
 from flask import redirect
-from flask import render_template
 from flask import request
 from flask import url_for
 from flask_login import current_user
@@ -12,32 +13,32 @@ from flask_login import login_user
 from flask_login import logout_user
 from flask_login import login_required
 from werkzeug.security import check_password_hash
-from .database import db
-from .models import User
+from .database import DB
+from .database import User
 
-auth = Blueprint('auth', __name__)
+AUTH = Blueprint('auth', __name__)
 
 
-@auth.route('/logout')
+@AUTH.route('/logout')
 @login_required
 def logout():
+  """Logout a user."""
   current_user.ip_addr = ''
   current_user.session_expiration = datetime.fromtimestamp(time.time() - 10)
-  db.session.commit()
+  DB.session.commit()
   logout_user()
   return redirect(url_for('main.index'))
 
-@auth.route('/login', methods=['POST'])
+@AUTH.route('/login', methods=['POST'])
 def login_post():
+  """Handle the login form."""
   username = request.form.get('username')
   password = request.form.get('password')
-  remember = True if request.form.get('remember') else False
+  remember = request.form.get('remember')
   user = User.query.filter_by(username=username).first()
-
-  if not user or not check_password_hash(user.password, password): 
+  if user and check_password_hash(user.password, password):
+    # login successful
+    login_user(user, remember=remember)
+  else:
     flash('Please check your login details and try again.')
-    return redirect(url_for('main.index'))
-
-  # login successful
-  login_user(user, remember=remember)
   return redirect(url_for('main.index'))
