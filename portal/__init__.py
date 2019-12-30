@@ -1,8 +1,12 @@
 """Create the flask app for the portal."""
+import logging
 import os
 
 from flask import Flask
 from flask_login import LoginManager
+
+logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
+log = logging.getLogger(__name__)
 
 def create_app(test_config=None):
   """Create the flask app for the portal."""
@@ -32,13 +36,15 @@ def _register_blueprints(app):
   app.register_blueprint(main_blueprint)
 
 def _load_config(app, test_config):
+  db_uri = 'sqlite:///' + os.path.join(app.instance_path, 'dev.db')
   app.config.from_mapping(
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
-    SQLALCHEMY_DATABASE_URI='sqlite:///dev.db',
+    SQLALCHEMY_DATABASE_URI=db_uri,
     SECRET_KEY='dev')
   if test_config:
     app.config.from_mapping(test_config)
   if app.config['ENV'] == 'production':
+    log.info('Using production config')
     app.config.from_pyfile('prod.cfg', silent=True)
   try:
     os.makedirs(app.instance_path)

@@ -11,7 +11,7 @@ import vyattaconfparser
 
 MIN_RULE_NUM = 11
 MAX_RULE_NUM = 48
-SHOW_CONFIG = ['show', 'configuration']
+SHOW_CONFIG = ['/bin/cli-shell-api', 'showConfig', '--show-active-only']
 RULE_NAME = 'SQUID'
 SESSIONS_URL = 'http://192.168.3.10/sessions'
 
@@ -56,9 +56,7 @@ class Config(object): # pylint: disable=too-few-public-methods
       self.portal = Portal()
     if not config:
       try:
-        proc = subprocess.Popen(SHOW_CONFIG, stdout=subprocess.PIPE)
-        config = subprocess.check_output(('no-more'), stdin=proc.stdout)
-        proc.wait()
+        config = subprocess.check_output(SHOW_CONFIG)
       except subprocess.CalledProcessError as error:
         logging.error(error.output)
         sys.exit(error.returncode)
@@ -148,7 +146,7 @@ class Portal(object): # pylint: disable=too-few-public-methods
 
 def main(): # pylint: disable=missing-docstring
   config = Config()
-  print config.updates()
+  sys.stdout.write(config.updates())
 
 if __name__ == '__main__':
   main()

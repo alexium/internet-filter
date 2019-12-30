@@ -18,7 +18,8 @@ MAIN = Blueprint('main', __name__)
 def index():
   """Home page for the portal."""
   if current_user.is_authenticated:
-    current_user.ip_addr = request.remote_addr
+    current_user.ip_addr = request.remote_addr or \
+      request.environ['HTTP_X_FORWARDED_FOR']
     current_user.session_expiration = datetime.fromtimestamp(
       time.time() + User.SESSION_DURATION)
     DB.session.commit()
@@ -32,4 +33,4 @@ def sessions():
   output = ""
   for user in users:
     output += '%s %s\n' % (user.username, user.ip_addr)
-  return Response(output, 'text/plain')
+  return Response(output, mimetype='text/plain')
