@@ -5,8 +5,8 @@ import os
 from flask import Flask
 from flask_login import LoginManager
 
-logging.basicConfig(level=os.environ.get("LOGLEVEL", "INFO"))
-log = logging.getLogger(__name__)
+logging.basicConfig(level=os.environ.get('LOGLEVEL', 'INFO'))
+LOG = logging.getLogger(__name__)
 
 def create_app(test_config=None):
   """Create the flask app for the portal."""
@@ -40,11 +40,15 @@ def _load_config(app, test_config):
   app.config.from_mapping(
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
     SQLALCHEMY_DATABASE_URI=db_uri,
-    SECRET_KEY='dev')
+    SECRET_KEY='dev',
+    ROUTER_USER='ubnt',
+    ROUTER_IP='192.168.3.1',
+    ROUTER_CMD='/config/scripts/edgerouter.sh'
+  )
   if test_config:
     app.config.from_mapping(test_config)
-  if app.config['ENV'] == 'production':
-    log.info('Using production config')
+  elif app.config['ENV'] == 'production':
+    LOG.info('Using production config')
     app.config.from_pyfile('prod.cfg', silent=True)
   try:
     os.makedirs(app.instance_path)

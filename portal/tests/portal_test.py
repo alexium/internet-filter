@@ -1,10 +1,12 @@
 #!/usr/bin/python3
 """Unit tests for portal."""
+import subprocess
 import time
+from datetime import datetime
 import unittest
 
-from datetime import datetime
 from flask_login import current_user
+from portal import auth
 from portal import create_app
 from portal import database
 from portal.database import User
@@ -13,11 +15,18 @@ from portal.database import User
 class TestPortal(unittest.TestCase):
   """Unit tests for portal."""
 
+  @classmethod
+  def subprocess_run(
+      cls, cmd, capture_output=None, check=None): # pylint: disable=unused-argument
+    """Helper method for mocking subprocess.run calls."""
+    return subprocess.CompletedProcess(args='foo', returncode=0)
+
   def setUp(self):
     config = ({'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:'})
     self.app = create_app(test_config=config)
     with self.app.app_context():
       database.init_db()
+    auth.subprocess.run = TestPortal.subprocess_run
 
   def test_home(self):
     """Test home page."""

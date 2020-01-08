@@ -4,6 +4,8 @@
 EdgeOS v2.0.6 includes python2.7 but not python3."""
 
 import logging
+import logging.handlers
+import os
 import subprocess
 import sys
 import urllib2
@@ -13,7 +15,14 @@ MIN_RULE_NUM = 11
 MAX_RULE_NUM = 48
 SHOW_CONFIG = ['/bin/cli-shell-api', 'showConfig', '--show-active-only']
 RULE_NAME = 'SQUID'
-SESSIONS_URL = 'http://192.168.3.10/sessions'
+if os.environ.get('FLASK_ENV') == 'development':
+  SESSIONS_URL = 'http://192.168.3.10:5000/sessions'
+else:
+  SESSIONS_URL = 'http://192.168.3.10/sessions'
+
+LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.ERROR)
+LOG.addHandler(logging.handlers.SysLogHandler('/dev/log'))
 
 
 class Rule(object):
@@ -58,7 +67,7 @@ class Config(object): # pylint: disable=too-few-public-methods
       try:
         config = subprocess.check_output(SHOW_CONFIG)
       except subprocess.CalledProcessError as error:
-        logging.error(error.output)
+        LOG.error(error.output)
         sys.exit(error.returncode)
     self.config = vyattaconfparser.parse_conf(config)
     self.rules_config = self.config['firewall']['modify'][RULE_NAME]['rule']
@@ -111,7 +120,7 @@ class Config(object): # pylint: disable=too-few-public-methods
       if rule_num not in self.rules:
         available_rules.append(rule_num)
     if not available_rules:
-      logging.error('No available rules')
+      LOG.error('No available rules')
       sys.exit(1)
     return available_rules
 
@@ -135,7 +144,7 @@ class Portal(object): # pylint: disable=too-few-public-methods
         response = urllib2.urlopen(SESSIONS_URL)
         self.sessions_str = response.read()
       except IOError as error:
-        logging.error(error)
+        LOG.error(error)
         sys.exit(1)
     for session in self.sessions_str.split('\n'):
       if session:

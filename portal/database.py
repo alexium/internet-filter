@@ -1,7 +1,10 @@
 """Database models for the portal."""
 # pylint: disable=no-member
-import click
+import time
+from datetime import datetime
 
+import click
+from flask import request
 from flask.cli import with_appcontext
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
@@ -21,6 +24,14 @@ class User(DB.Model, UserMixin):
   password = DB.Column(DB.String(100))
   ip_addr = DB.Column(DB.String(100))
   session_expiration = DB.Column(DB.DateTime())
+
+  def update_session(self):
+    """Write session expiration and IP address to the DB."""
+    self.ip_addr = request.remote_addr or \
+      request.environ['HTTP_X_FORWARDED_FOR']
+    self.session_expiration = datetime.fromtimestamp(
+      time.time() + User.SESSION_DURATION)
+    DB.session.commit()
 
 
 def init_db():
