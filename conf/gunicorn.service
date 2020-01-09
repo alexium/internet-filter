@@ -1,0 +1,21 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+Type=notify
+User=gunicorn
+Group=gunicorn
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/pi/internet-filter
+# The portal app invokes a script on the router that synchronously calls back to the portal.
+# The default for Gunicorn is a single worker, which deadlocks in this scenario.
+ExecStart=/usr/local/bin/gunicorn --workers=3 'portal:create_app()' 
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -42,8 +42,9 @@ def _load_config(app, test_config):
     SQLALCHEMY_DATABASE_URI=db_uri,
     SECRET_KEY='dev',
     ROUTER_USER='ubnt',
-    ROUTER_IP='192.168.3.1',
-    ROUTER_CMD='/config/scripts/edgerouter.sh'
+    ROUTER_HOSTNAME='router',
+    ROUTER_CMD='/config/scripts/edgerouter.sh',
+    SERVER_NAME='portal'
   )
   if test_config:
     app.config.from_mapping(test_config)

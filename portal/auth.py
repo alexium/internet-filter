@@ -63,7 +63,7 @@ def update_router_config():
       None if update succeeded or error string if update failed.
     """
   cmd = ['ssh', '%s@%s' % (current_app.config['ROUTER_USER'],
-                           current_app.config['ROUTER_IP']),
+                           current_app.config['ROUTER_HOSTNAME']),
          'export FLASK_ENV=%s; %s' % (current_app.config['ENV'],
                                       current_app.config['ROUTER_CMD'])]
   try:
