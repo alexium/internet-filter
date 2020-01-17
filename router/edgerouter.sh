@@ -25,4 +25,5 @@ $VYATTA_CMD commit
 [ $? -ge 1 ] && log_error "VYATTA_CMD commit failed"
 $VYATTA_CMD end
 [ $? -ge 1 ] && log_error "VYATTA_CMD end failed"
+
 exit 0

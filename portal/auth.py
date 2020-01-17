@@ -46,7 +46,7 @@ def login_post():
   remember = request.form.get('remember')
   user = User.query.filter_by(username=username).first()
   if user and check_password_hash(user.password, password):
-    LOG.info('Login for %s', username)
+    LOG.info('Login for %s from %s', username, User.get_ip_addr())
     login_user(user, remember=remember)
     current_user.update_session()
     error_msg = update_router_config()
