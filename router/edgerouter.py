@@ -16,9 +16,9 @@ MAX_RULE_NUM = 48
 SHOW_CONFIG = ['/bin/cli-shell-api', 'showConfig', '--show-active-only']
 RULE_NAME = 'SQUID'
 if os.environ.get('FLASK_ENV') == 'development':
-  SESSIONS_URL = 'http://192.168.3.10:5000/sessions'
+  SESSIONS_URL = 'http://portal:5000/sessions'
 else:
-  SESSIONS_URL = 'http://192.168.3.10/sessions'
+  SESSIONS_URL = 'http://portal/sessions'
 
 LOG = logging.getLogger(__name__)
 LOG.setLevel(logging.ERROR)

@@ -4,7 +4,7 @@ VYATTA_CMD=/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper
 TAG="configure_ip_addresses"
 
 log_error() {
-  echo $@ | logger -t $TAG
+  echo $@ | logger -t $TAG    
 }
 
 commands=$(/config/scripts/edgerouter.py 2>&1)
@@ -16,7 +16,7 @@ fi
 [ ${#commands} -le 0 ] && exit 0
 
 $VYATTA_CMD begin
-[ $? -ge 1 ] && log_error "VYATTA_CMD begin failed"
+[ $? -ge 1 ] && log_error "VYATTA_CMD begin failed"  
 while read -r cmd; do
   $VYATTA_CMD $cmd
 done <<< "$commands"
