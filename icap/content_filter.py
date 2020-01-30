@@ -34,11 +34,11 @@ class Filter(): # pylint: disable=too-few-public-methods
     # LOG.info('Initialized allow_list: %s', str(self.allow_hosts))
 
   def allowed(self, hostname):
-    """Returns boolean, if the hostname is allowed."""
-    domain_list = hostname.split('.')
+    """Returns boolean, if the hostname in bytes is allowed."""
+    domain_list = hostname.split(b'.')
     while len(domain_list) > 1:
-      domain = '.'.join(domain_list)
-      if domain in self.allow_hosts:
+      domain = b'.'.join(domain_list)
+      if str(domain) in self.allow_hosts:
         return True
       domain_list.pop()
     return False
